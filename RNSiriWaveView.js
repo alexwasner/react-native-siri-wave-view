@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { StyleSheet, ViewPropTypes, Platform } from "react-native";
+import ReactNative,{ StyleSheet, ViewPropTypes, Platform, UIManager } from "react-native";
 import PropTypes from "prop-types";
 
 import { requireNativeComponent } from "react-native";
@@ -8,9 +8,23 @@ class RNSiriWaveView extends Component {
   constructor(props) {
     super(props)
   }
-
+  startAnimation(){
+    UIManager.dispatchViewManagerCommand(
+      ReactNative.findNodeHandle(this._siri),
+      UIManager.RNSiriWaveView.Commands.toggleAnimation,
+      [true]
+    );
+  }
+  stopAnimation(){
+    UIManager.dispatchViewManagerCommand(
+      ReactNative.findNodeHandle(this._siri),
+      UIManager.RNSiriWaveView.Commands.toggleAnimation,
+      [false]
+    );
+  }
   render() {
       return <SiriWaveView style={{ width: this.props.width, height: this.props.height }} 
+        ref={(s) => { this._siri = s; }}
         props={{
           width: this.props.width,
           height: this.props.height,
@@ -28,7 +42,6 @@ class RNSiriWaveView extends Component {
           colors: this.props.colors,
           type: this.props.type
         }}
-        startAnimation={this.props.startAnimation} stopAnimation={this.props.stopAnimation}
       />;
   }
 }
@@ -79,6 +92,8 @@ RNSiriWaveView.defaultProps = {
   startAnimation: false,
   stopAnimation: false
 };
+
+// RNSiriWaveView.
 
 const SiriWaveView = requireNativeComponent(
   "RNSiriWaveView",

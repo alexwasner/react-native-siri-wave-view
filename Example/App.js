@@ -18,27 +18,19 @@ import RNSiriWaveView from 'react-native-siri-wave-view'
 export default class App extends Component<{}> {
   constructor (props) {
     super(props)
-
-    this.state = {
-      startAnimation: false,
-      stopAnimation: false
-    }
   }
 
   render() {
     return <View style={styles.container}>
-        <RNSiriWaveView type={0} width={800} height={750} startAnimation={this.state.startAnimation} stopAnimation={this.state.stopAnimation} />
+        <RNSiriWaveView ref={(s) => { this._siri = s; }} type={0} width={800} height={750} startAnimation={this.state.startAnimation} stopAnimation={this.state.stopAnimation} />
 
         <TouchableOpacity style={[styles.button]} onPress={() => {
-          this.setState({ startAnimation: true, stopAnimation: false });
+          this._siri.startAnimation()
         }}>
           <Text>Start</Text>
         </TouchableOpacity>
         <TouchableOpacity style={[styles.button]} onPress={() => {
-          this.setState({
-            startAnimation: false,
-            stopAnimation: true
-          });
+          this._siri.stopAnimation()
         }}>
           <Text>Stop</Text>
         </TouchableOpacity>

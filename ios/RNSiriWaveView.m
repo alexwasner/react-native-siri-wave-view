@@ -4,6 +4,8 @@
 @implementation RNSiriWaveView
 
 NSTimer *timer;
+SCSiriWaveformView *siriWave;
+PXSiriWave *pxSiriWave;
 
 - (dispatch_queue_t)methodQueue
 {
@@ -47,7 +49,7 @@ RCT_CUSTOM_VIEW_PROPERTY(props, NSDictonary *, UIView)
     NSNumber *type = [json objectForKey: @"type"];
     
     if ([type intValue] == 0) {
-        SCSiriWaveformView *siriWave = [[SCSiriWaveformView alloc] initWithFrame: CGRectMake(0, 0, [width intValue], [height intValue])];
+        siriWave = [[SCSiriWaveformView alloc] initWithFrame: CGRectMake(0, 0, [width intValue], [height intValue])];
         siriWave.numberOfWaves = [numberOfWaves floatValue];
         siriWave.backgroundColor = [RNSiriWaveView colorFromHexCode: backgroundColor];
         siriWave.waveColor = [RNSiriWaveView colorFromHexCode: waveColor];
@@ -62,45 +64,38 @@ RCT_CUSTOM_VIEW_PROPERTY(props, NSDictonary *, UIView)
         [view addSubview: siriWave];
     } else if ([type intValue] == 1) {
         
-        PXSiriWave *siriWave = [[PXSiriWave alloc] initWithFrame: CGRectMake(0, 0, [width intValue], [height intValue])];
-        siriWave.backgroundColor = [RNSiriWaveView colorFromHexCode: backgroundColor];
-        siriWave.frequency = [frequency floatValue];
-        siriWave.amplitude = [amplitude floatValue];
-        siriWave.intensity = [intensity floatValue];
-        siriWave.colors = mutableColors;
+        pxSiriWave = [[PXSiriWave alloc] initWithFrame: CGRectMake(0, 0, [width intValue], [height intValue])];
+        pxSiriWave.backgroundColor = [RNSiriWaveView colorFromHexCode: backgroundColor];
+        pxSiriWave.frequency = [frequency floatValue];
+        pxSiriWave.amplitude = [amplitude floatValue];
+        pxSiriWave.intensity = [intensity floatValue];
+        pxSiriWave.colors = mutableColors;
         
-        [siriWave configure];
+        [pxSiriWave configure];
         
-        [view addSubview: siriWave];
+        [view addSubview: pxSiriWave];
     }
 }
 
-RCT_CUSTOM_VIEW_PROPERTY(startAnimation, bool, UIView) {
-    if ([json integerValue] == 1 && timer == NULL) {
-        SCSiriWaveformView *siriWave = [[view subviews] objectAtIndex: 0];
-        
-        if (siriWave != nil) {
-            // Timer
-            timer = [NSTimer scheduledTimerWithTimeInterval: 0.02
-               target:self
-               selector: @selector(targetMethod:)
-               userInfo: siriWave
-               repeats:YES];
+RCT_EXPORT_METHOD(toggleAnimation:(nonnull NSNumber *)reactTag toggleState:(BOOL *)boolean) {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if (!boolean && timer != NULL) {
+            [timer invalidate];
+            timer = NULL;
         }
-    }
-}
-
-RCT_CUSTOM_VIEW_PROPERTY(stopAnimation, bool, UIView) {
-    if ([json integerValue] == 1 && timer != NULL) {
-        [timer invalidate];
-        timer = NULL;
-    }
+        if (boolean && timer == NULL) {
+            timer = [NSTimer scheduledTimerWithTimeInterval: 0.02
+                                                     target:self
+                                                   selector: @selector(targetMethod:)
+                                                   userInfo: nil
+                                                    repeats:YES];
+        }
+    });
 }
 
 -(void)targetMethod:(NSTimer *)timer  {
-    SCSiriWaveformView *siriWave = [timer userInfo];
-
     [siriWave updateWithLevel: [self _normalizedPowerLevelFromDecibels: .1]];
+    [pxSiriWave updateWithLevel: [self _normalizedPowerLevelFromDecibels: .4]];
 }
 
 - (CGFloat)_normalizedPowerLevelFromDecibels:(CGFloat)decibels {

@@ -92,8 +92,6 @@ import RNSiriWaveView from 'react-native-siri-wave-view';
 | `frequency`      | `number`     |    1.5     | Frequency of Waves |
 | `idleAmplitude`      | `number`     |    0.01     | Idle Amplitude of Waves |
 | `amplitude`      | `number`     |    0.01     | Amplitude of Waves |
-| `startAnimation`      | `bool`     |    false     | To Start the wave animation |
-| `stopAnimation`      | `bool`     |   false      | To Stop the ongoing wave animation |
 | `iOS: density`      | `number`     |     5    | Density of Waves |
 | `iOS: phaseShift`      | `number`     |   -0.15      | Width of secondary wave |
 
@@ -108,6 +106,20 @@ import RNSiriWaveView from 'react-native-siri-wave-view';
 | `intensity`      | `number`     |    0.3     | Specify intensity of wave |
 | `colors`      | `array`     |    ["#2085fc", "#5efca9", "#fd4767"]     | Specify colors of siri wave 9 colors |
 
+
+##Functions
+| `startAnimation`      | To Start the wave animation |
+| `stopAnimation`      | To Stop the ongoing wave animation |
+
+```
+	Example:
+	componentDidMount(){
+    this._siri.startAnimation()
+    setTimeout(()=>{
+      this._siri.stopAnimation()
+    },1000)
+	}
+```
 
 ## Credit
 - iOS: [stefanceriu/SCSiriWaveformView](https://github.com/stefanceriu/SCSiriWaveformView)

@@ -71,22 +71,40 @@ public class RNSiriWaveView extends ViewGroupManager<ViewGroup> {
         siriWaveViewFrame.addView(siriWaveView);
     }
 
-
-    @ReactProp(name = "startAnimation")
-    public void setStartAnimation(FrameLayout SiriWaveViewFrame, boolean startAnimation) {
+    @ReactMethod
+    public void show(String message, boolean toggleState) {
         SiriWaveView siriWaveView = (SiriWaveView) SiriWaveViewFrame.getChildAt(0);
-        if (siriWaveView != null && animating == false && startAnimation) {
-            animating = true;
-            siriWaveView.startAnimation();
+        if(toggleState){
+            if (siriWaveView != null && animating == false && startAnimation) {
+                animating = true;
+                siriWaveView.startAnimation();
+            }
+        }else{
+            if (siriWaveView != null && animating == true && stopAnimation) {
+                animating = false;
+                siriWaveView.stopAnimation();
+            }
         }
     }
+    
+    @Override
+    public void receiveCommand(
+            RNSiriWaveView view,
+            int commandType,
+            @Nullable ReadableArray args) {
+        Assertions.assertNotNull(view);
+        Assertions.assertNotNull(args);
+        switch (commandType) {
+            case COMMAND_SAVE_IMAGE: {
+                view.show(args.getBoolean(1));
+                return;
+            }
 
-    @ReactProp(name = "stopAnimation")
-    public void setStopAnimation(FrameLayout SiriWaveViewFrame, boolean stopAnimation) {
-        SiriWaveView siriWaveView = (SiriWaveView) SiriWaveViewFrame.getChildAt(0);
-        if (siriWaveView != null && animating == true && stopAnimation) {
-            animating = false;
-            siriWaveView.stopAnimation();
+            default:
+                throw new IllegalArgumentException(String.format(
+                        "Unsupported command %d received by %s.",
+                        commandType,
+                        getClass().getSimpleName()));
         }
     }
 }
